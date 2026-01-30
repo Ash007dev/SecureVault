@@ -7,47 +7,36 @@ A comprehensive demonstration of cybersecurity concepts including encryption, di
 ## 📸 Screenshots
 
 ### 1. Secure Registration
-![Secure Registration](output_screenshots/demo_signup.png)
 *Enforces strong password policy (uppercase, lowercase, special chars) with role selection (Student/Faculty)*
 
 ### 2. Multi-Factor Authentication
-![Multi-Factor Authentication](output_screenshots/demo_otp_console.png)
 *OTP is sent to the secure server console (simulating SMS/Email)*
 
 ### 3. Password Recovery Flow
-![Password Recovery Flow](output_screenshots/demo_forgot_password.png)
 *Secure identity verification before password reset*
 
 ### 4. Password Reset
-![Password Reset](output_screenshots/demo_reset_password.png)
 *New password must also meet strict security requirements*
 
 ### 5. Student Password Vault
-![Student Password Vault](output_screenshots/demo_student_vault.png)
 *Securely store, manage, and autogenerate passwords for personal use*
 
 ### 6. Add New Password
-![Add New Password](output_screenshots/demo_add_password.png)
 *"I have a password" / "Autogenerate" toggle with secure storage*
 
 ### 7. Faculty Upload Dashboard
-![Faculty Upload Dashboard](output_screenshots/demo_faculty_dashboard.png)
 *Upload quiz passwords, protected PDFs, and question papers*
 
 ### 8. Document Integrity Verification
-![Document Integrity](output_screenshots/demo_integrity_check.png)
 *Digital signatures ensure unauthorized modifications are detected immediately*
 
 ### 9. Admin Dashboard
-![Admin Dashboard](output_screenshots/demo_admin_dashboard.png)
 *Full control over user management and security monitoring*
 
 ### 10. User Management
-![User Management](output_screenshots/demo_view_users.png)
 *Admin view of all registered students, faculty, and their roles*
 
 ### 11. Audit Logs
-![Audit Logs](output_screenshots/demo_audit_logs.png)
 *Comprehensive tracking of all security events (logins, failures, uploads, downloads)*
 
 ---

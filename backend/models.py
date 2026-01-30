@@ -115,6 +115,38 @@ def init_db():
     conn.commit()
     conn.close()
     print("✓ Database initialized successfully")
+    
+    # Create demo accounts if they don't exist
+    create_demo_accounts()
+
+
+def create_demo_accounts():
+    """Create demo accounts for testing (if they don't exist)."""
+    from utils.crypto import hash_password
+    
+    demo_users = [
+        ('admin', 'admin123', 'admin'),
+        ('faculty1', 'faculty123', 'faculty'),
+        ('student1', 'student123', 'student'),
+    ]
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    for username, password, role in demo_users:
+        # Check if user already exists
+        cursor.execute('SELECT id FROM users WHERE username = ?', (username,))
+        if cursor.fetchone() is None:
+            # Hash password and create user
+            password_hash, salt = hash_password(password)
+            cursor.execute('''
+                INSERT INTO users (username, password_hash, salt, role)
+                VALUES (?, ?, ?, ?)
+            ''', (username, password_hash, salt, role))
+            print(f"  ✓ Demo account created: {username} / {password} ({role})")
+    
+    conn.commit()
+    conn.close()
 
 
 # =============================================================================
