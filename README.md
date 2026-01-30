@@ -36,8 +36,8 @@ A comprehensive demonstration of cybersecurity concepts including encryption, di
 ### 10. User Management
 *Admin view of all registered students, faculty, and their roles*
 
-### 11. Audit Logs
-*Comprehensive tracking of all security events (logins, failures, uploads, downloads)*
+### 12. Biometric Authentication (WebAuthn)
+*Passwordless login using FaceID, TouchID, or Windows Hello*
 
 ---
 
@@ -57,12 +57,14 @@ SecureVault/
 │   └── utils/
 │       ├── access_control.py    # RBAC & JWT
 │       ├── crypto.py            # Encryption & signing
-│       └── otp.py               # MFA utilities
+│       ├── otp.py               # MFA utilities
+│       └── webauthn_utils.py    # Passkey utilities
 │
 └── frontend/                     # Next.js Web App
     └── app/
         ├── page.tsx             # Login page
         ├── signup/              # Registration
+        ├── profile/             # User profile & Passkeys
         ├── reset-password/      # Password reset
         ├── dashboard/           # Role-based router
         ├── student/
@@ -90,18 +92,47 @@ SecureVault/
 - Node.js 18+
 
 ### Backend Setup
-```bash
-cd backend
-pip install -r requirements.txt
-python app.py
-```
+1. Navigate to backend:
+   ```bash
+   cd backend
+   ```
+2. Create virtual environment (optional but recommended):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Windows: venv\Scripts\activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Configure Environment (Optional):**
+   - The app runs fine with defaults!
+   - For email OTPs, create a `.env` file (see `.env.example` if available) with `MAIL_USERNAME` and `MAIL_PASSWORD`.
+   
+5. **Run Server:**
+   ```bash
+   python app.py
+   ```
+   > **Note:** On the first run, the application will **automatically**:
+   > - 🔑 Generate new RSA & AES encryption keys (in `backend/keys/`)
+   > - 🗄️ Create the SQLite database (`secure_storage.db`)
+   > - 👤 Create demo accounts (`admin`, `faculty1`, `student1`)
 
 ### Frontend Setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
+
+### Frontend Setup
+1. Navigate to frontend:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run Development Server:
+   ```bash
+   npm run dev
+   ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
@@ -123,6 +154,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 |---------------|---------|---------|-------|
 | Store Personal Passwords | ✅ | ❌ | ❌ |
 | View/Edit Own Passwords | ✅ | ❌ | ❌ |
+| Register Passkeys | ✅ | ✅ | ✅ |
 | Upload Quiz Passwords | ❌ | ✅ | ❌ |
 | Upload Protected PDFs | ❌ | ✅ | ❌ |
 | Upload Question Papers | ❌ | ✅ | ❌ |
@@ -140,6 +172,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 | POST | `/auth/register` | Create new account (Student/Faculty) |
 | POST | `/auth/login` | Password verification → OTP sent |
 | POST | `/auth/verify-otp` | Complete MFA → JWT issued |
+| POST | `/auth/webauthn/register/*` | Passkey registration |
+| POST | `/auth/webauthn/login/*` | Passwordless login |
 | POST | `/auth/forgot-password` | Request password reset OTP |
 | POST | `/auth/reset-password` | Reset password with OTP |
 | GET | `/auth/me` | Get current user info |
@@ -286,6 +320,7 @@ Base64( IV[16 bytes] + Signature[256 bytes] + Ciphertext )
 - PBKDF2-SHA256 (100k iterations)
 - AES-256-CBC
 - RSA-2048-PSS
+- FIDO2 / WebAuthn (Passkeys)
 - Base64 encoding
 
 ---
@@ -295,6 +330,7 @@ Base64( IV[16 bytes] + Signature[256 bytes] + Ciphertext )
 The registration and login processes follow the NIST E-Authentication Architecture Model:
 - **Strong password policy** enforcement
 - **Multi-factor authentication** (password + OTP)
+- **Biometric Authentication** (FIDO2/WebAuthn)
 - **Rate limiting** on failed login attempts
 - **Secure session management** with JWT tokens
 
@@ -304,7 +340,7 @@ The registration and login processes follow the NIST E-Authentication Architectu
 
 | Requirement | Component | Marks |
 |-------------|-----------|-------|
-| Single-Factor Auth | Username/Password login | 1.5 |
+| Single-Factor Auth | Username/Password, Passkeys | 1.5 |
 | Multi-Factor Auth | Password + OTP | 1.5 |
 | Access Control Matrix | 3 roles × 4+ objects | 1.5 |
 | Policy Definition | RBAC with justifications | 1.5 |

@@ -12,7 +12,7 @@ Endpoints:
 - GET /auth/me - Get current user info
 """
 
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify, g, Response
 from models import (
     create_user, get_user_by_username, update_user_password,
     create_otp, verify_otp, create_audit_log,
@@ -289,7 +289,8 @@ def webauthn_register_options():
     # Store challenge
     CHALLENGE_STORE[f"reg_{user['id']}"] = options.challenge
     
-    return jsonify(options_to_json(options))
+    # options_to_json returns a JSON string, return directly with proper content-type
+    return Response(options_to_json(options), mimetype='application/json')
 
 @auth_bp.route('/webauthn/register/verify', methods=['POST'])
 @require_auth
@@ -304,16 +305,17 @@ def webauthn_register_verify():
     data = request.get_json()
     
     try:
-        verification = verify_reg_response(data, challenge, None) # access options if needed
+        result = verify_reg_response(data, challenge)
         
-        if verification.verified:
+        if result['verified']:
             create_webauthn_credential(
                 user_id=user_id,
-                credential_id=verification.credential_id,
-                public_key=verification.credential_public_key,
-                sign_count=verification.sign_count,
+                credential_id=result['credential_id'],
+                public_key=result['credential_public_key'],
+                sign_count=result['sign_count'],
                 transports=data.get('response', {}).get('transports', [])
             )
+            del CHALLENGE_STORE[f"reg_{user_id}"]
             return jsonify({'success': True, 'message': 'Passkey registered successfully!'})
             
     except Exception as e:
@@ -344,7 +346,7 @@ def webauthn_login_options():
     # Store challenge (keyed by username for simplicity in this demo)
     CHALLENGE_STORE[f"auth_{username}"] = options.challenge
     
-    return jsonify(options_to_json(options))
+    return Response(options_to_json(options), mimetype='application/json')
 
 
 @auth_bp.route('/webauthn/login/verify', methods=['POST'])
@@ -368,15 +370,16 @@ def webauthn_login_verify():
         return jsonify({'error': 'Credential not found'}), 404
         
     try:
-        verification = verify_auth_response(
+        result = verify_auth_response(
             data, 
             challenge, 
             stored_cred, 
             stored_cred['sign_count']
         )
         
-        if verification.verified:
-            update_credential_counter(stored_cred['credential_id'], verification.sign_count)
+        if result['verified']:
+            update_credential_counter(stored_cred['credential_id'], result['sign_count'])
+            del CHALLENGE_STORE[f"auth_{username}"]
             
             token = create_jwt_token(user['id'], user['username'], user['role'])
             create_audit_log(
