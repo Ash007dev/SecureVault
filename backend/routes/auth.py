@@ -12,6 +12,7 @@ Endpoints:
 - GET /auth/me - Get current user info
 """
 
+import json
 from flask import Blueprint, request, jsonify, g, Response
 from models import (
     create_user, get_user_by_username, update_user_password,
@@ -289,8 +290,8 @@ def webauthn_register_options():
     # Store challenge
     CHALLENGE_STORE[f"reg_{user['id']}"] = options.challenge
     
-    # options_to_json returns a JSON string, return directly with proper content-type
-    return Response(options_to_json(options), mimetype='application/json')
+    # Parse JSON string back to dict for jsonify (needed for CORS headers)
+    return jsonify(json.loads(options_to_json(options)))
 
 @auth_bp.route('/webauthn/register/verify', methods=['POST'])
 @require_auth
@@ -346,7 +347,7 @@ def webauthn_login_options():
     # Store challenge (keyed by username for simplicity in this demo)
     CHALLENGE_STORE[f"auth_{username}"] = options.challenge
     
-    return Response(options_to_json(options), mimetype='application/json')
+    return jsonify(json.loads(options_to_json(options)))
 
 
 @auth_bp.route('/webauthn/login/verify', methods=['POST'])
