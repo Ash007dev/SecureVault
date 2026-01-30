@@ -96,10 +96,10 @@ export default function AdminDashboard() {
                     </li>
                 </nav>
 
-                <div className="absolute bottom-6 left-4 right-4">
-                    <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 mb-3">
-                        <div className="text-sm text-orange-400 font-medium">{user?.username}</div>
-                        <div className="text-xs text-gray-500">Administrator</div>
+                <div className="sidebar-footer">
+                    <div className="sidebar-user admin">
+                        <div className="sidebar-username">{user?.username}</div>
+                        <div className="sidebar-role">Administrator</div>
                     </div>
                     <button onClick={handleLogout} className="btn btn-secondary w-full text-sm">
                         Logout

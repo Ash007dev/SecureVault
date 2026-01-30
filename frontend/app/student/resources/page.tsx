@@ -190,10 +190,10 @@ export default function StudentResourcesPage() {
                     </li>
                 </nav>
 
-                <div className="absolute bottom-6 left-4 right-4">
-                    <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 mb-3">
-                        <div className="text-sm text-blue-400 font-medium">{user?.username}</div>
-                        <div className="text-xs text-gray-500">Student</div>
+                <div className="sidebar-footer">
+                    <div className="sidebar-user student">
+                        <div className="sidebar-username">{user?.username}</div>
+                        <div className="sidebar-role">Student</div>
                     </div>
                     <button onClick={handleLogout} className="btn btn-secondary w-full text-sm">
                         Logout
@@ -312,10 +312,10 @@ export default function StudentResourcesPage() {
                             {/* Validation Status */}
                             {tokenData.validationMessage && (
                                 <div className={`p-4 rounded-lg border mb-4 ${tokenData.isValid === true
-                                        ? 'bg-green-500/10 border-green-500/30 text-green-400'
-                                        : tokenData.isValid === false
-                                            ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                                            : 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400'
+                                    ? 'bg-green-500/10 border-green-500/30 text-green-400'
+                                    : tokenData.isValid === false
+                                        ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                                        : 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400'
                                     }`}>
                                     <div className="font-medium text-center">
                                         {tokenData.validationMessage}

@@ -97,10 +97,10 @@ export default function FacultyDashboard() {
                     </li>
                 </nav>
 
-                <div className="absolute bottom-6 left-4 right-4">
-                    <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20 mb-3">
-                        <div className="text-sm text-purple-400 font-medium">{user?.username}</div>
-                        <div className="text-xs text-gray-500">Faculty</div>
+                <div className="sidebar-footer">
+                    <div className="sidebar-user faculty">
+                        <div className="sidebar-username">{user?.username}</div>
+                        <div className="sidebar-role">Faculty</div>
                     </div>
                     <button onClick={handleLogout} className="btn btn-secondary w-full text-sm">
                         Logout

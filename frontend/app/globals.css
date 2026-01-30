@@ -555,6 +555,8 @@ body {
   background: var(--card);
   border-right: 1px solid #222;
   padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-logo {
@@ -566,10 +568,13 @@ body {
   gap: 12px;
   padding: 0 8px;
   margin-bottom: 32px;
+  flex-shrink: 0;
 }
 
 .sidebar-nav {
   list-style: none;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .sidebar-item {
@@ -598,11 +603,63 @@ body {
   color: var(--primary);
 }
 
+/* Sidebar footer (user info + logout) */
+.sidebar-footer {
+  padding-top: 16px;
+  border-top: 1px solid #222;
+  margin-top: 16px;
+  flex-shrink: 0;
+}
+
+.sidebar-user {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.sidebar-user.student {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.sidebar-user.faculty {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.sidebar-user.admin {
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.sidebar-username {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sidebar-user.student .sidebar-username {
+  color: var(--student-accent);
+}
+
+.sidebar-user.faculty .sidebar-username {
+  color: var(--faculty-accent);
+}
+
+.sidebar-user.admin .sidebar-username {
+  color: var(--admin-accent);
+}
+
+.sidebar-role {
+  font-size: 12px;
+  color: #666;
+  text-transform: capitalize;
+}
+
 /* Main content with sidebar */
 .main-with-sidebar {
   margin-left: 260px;
   min-height: 100vh;
-  padding: 32px;
+  padding: 32px 40px;
 }
 
 /* Header */
