@@ -9,6 +9,7 @@ export default function SignupPage() {
     const router = useRouter();
     const [formData, setFormData] = useState({
         username: '',
+        email: '',
         password: '',
         confirmPassword: '',
         role: 'student'
@@ -27,6 +28,7 @@ export default function SignupPage() {
 
     const allRequirementsMet = Object.values(requirements).every(Boolean);
     const passwordsMatch = formData.password === formData.confirmPassword && formData.confirmPassword.length > 0;
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,9 +44,14 @@ export default function SignupPage() {
             return;
         }
 
+        if (!isEmailValid) {
+            setError('Please enter a valid email address');
+            return;
+        }
+
         setLoading(true);
         try {
-            await authApi.register(formData.username, formData.password, formData.role);
+            await authApi.register(formData.username, formData.password, formData.role, formData.email);
             router.push('/?registered=true');
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Registration failed');
@@ -81,12 +88,12 @@ export default function SignupPage() {
                                     type="button"
                                     onClick={() => setFormData({ ...formData, role })}
                                     className={`p-3 rounded-lg border text-center transition-all ${formData.role === role
-                                            ? role === 'student'
-                                                ? 'border-blue-500 bg-blue-500/10 text-blue-400'
-                                                : role === 'faculty'
-                                                    ? 'border-purple-500 bg-purple-500/10 text-purple-400'
-                                                    : 'border-orange-500 bg-orange-500/10 text-orange-400'
-                                            : 'border-gray-700 text-gray-500 hover:border-gray-600'
+                                        ? role === 'student'
+                                            ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                                            : role === 'faculty'
+                                                ? 'border-purple-500 bg-purple-500/10 text-purple-400'
+                                                : 'border-orange-500 bg-orange-500/10 text-orange-400'
+                                        : 'border-gray-700 text-gray-500 hover:border-gray-600'
                                         }`}
                                 >
                                     <div className="text-xl mb-1">
@@ -99,7 +106,7 @@ export default function SignupPage() {
                     </div>
 
                     {/* Username */}
-                    <div className="mb-6">
+                    <div className="mb-4">
                         <label className="label">Username</label>
                         <input
                             type="text"
@@ -107,6 +114,19 @@ export default function SignupPage() {
                             placeholder="Choose a username"
                             value={formData.username}
                             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                            required
+                        />
+                    </div>
+
+                    {/* Email */}
+                    <div className="mb-6">
+                        <label className="label">Email Address</label>
+                        <input
+                            type="email"
+                            className="input"
+                            placeholder="name@example.com"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             required
                         />
                     </div>
@@ -185,7 +205,7 @@ export default function SignupPage() {
                     {/* Submit */}
                     <button
                         type="submit"
-                        disabled={loading || !allRequirementsMet || !passwordsMatch}
+                        disabled={loading || !allRequirementsMet || !passwordsMatch || !isEmailValid}
                         className="btn btn-primary w-full mb-4"
                     >
                         {loading ? (

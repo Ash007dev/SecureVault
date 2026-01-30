@@ -16,9 +16,13 @@ NIST SP 800-63-2 Compliance:
 """
 
 import os
+from dotenv import load_dotenv
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
+
+# Load environment variables from .env file
+load_dotenv()
 
 # =============================================================================
 # DATABASE CONFIGURATION
@@ -30,6 +34,14 @@ KEYS_PATH = os.path.join(os.path.dirname(__file__), 'keys')
 # Create directories if they don't exist
 os.makedirs(UPLOADS_PATH, exist_ok=True)
 os.makedirs(KEYS_PATH, exist_ok=True)
+
+# =============================================================================
+# EMAIL / SMTP CONFIGURATION
+# =============================================================================
+MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+MAIL_PASSWORD = os.getenv('MAIL_PASSWORD') # Use Google App Password
+MAIL_SERVER = "smtp.gmail.com"
+MAIL_PORT = 587
 
 # =============================================================================
 # KEY MANAGEMENT
@@ -115,7 +127,8 @@ AES_KEY = load_or_generate_aes_key()
 # =============================================================================
 # JWT CONFIGURATION
 # =============================================================================
-JWT_SECRET = 'securevault-jwt-secret-key-change-in-production'
+# Priority given to .env SECRET_KEY
+JWT_SECRET = os.getenv('SECRET_KEY', 'securevault-jwt-secret-key-change-in-production')
 JWT_ALGORITHM = 'HS256'
 JWT_EXPIRY_HOURS = 24
 
@@ -124,6 +137,13 @@ JWT_EXPIRY_HOURS = 24
 # =============================================================================
 OTP_LENGTH = 6
 OTP_EXPIRY_MINUTES = 5
+
+# =============================================================================
+# WEBAUTHN CONFIGURATION
+# =============================================================================
+RP_ID = "localhost"
+RP_NAME = "SecureVault"
+ORIGIN = "http://localhost:3000"
 
 # =============================================================================
 # PASSWORD POLICY (NIST SP 800-63-2)
@@ -143,30 +163,24 @@ LOCKOUT_DURATION_MINUTES = 15
 # =============================================================================
 # ACCESS CONTROL MATRIX (ACM)
 # =============================================================================
-# 3 Subjects: student, faculty, admin
-# 4+ Objects: passwords, resources, users, audit_logs
-# 
-# This matrix defines who can do what in the system.
-# Used by the @require_role decorator to enforce access control.
-
 ACCESS_CONTROL_MATRIX = {
     'student': {
-        'passwords': ['create', 'read', 'update', 'delete'],  # Own passwords only
-        'resources': ['read'],  # Read-only access to shared resources
-        'users': [],  # No access
-        'audit_logs': [],  # No access
+        'passwords': ['create', 'read', 'update', 'delete'],
+        'resources': ['read'],
+        'users': [],
+        'audit_logs': [],
     },
     'faculty': {
-        'passwords': [],  # No personal password vault
-        'resources': ['create', 'read', 'update', 'delete'],  # Own resources only
-        'users': [],  # No access
-        'audit_logs': [],  # No access
+        'passwords': [],
+        'resources': ['create', 'read', 'update', 'delete'],
+        'users': [],
+        'audit_logs': [],
     },
     'admin': {
-        'passwords': [],  # No personal password vault
-        'resources': ['read'],  # Can view all resources
-        'users': ['read'],  # Can view all users
-        'audit_logs': ['read'],  # Can view all audit logs
+        'passwords': [],
+        'resources': ['read'],
+        'users': ['read'],
+        'audit_logs': ['read'],
     }
 }
 

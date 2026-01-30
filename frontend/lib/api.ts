@@ -73,6 +73,30 @@ export const authApi = {
         }),
 
     me: () => fetchApi<{ user: User }>('/auth/me'),
+
+    // WebAuthn
+    webauthn: {
+        registerOptions: () =>
+            fetchApi<any>('/auth/webauthn/register/options', { method: 'POST' }),
+
+        registerVerify: (data: any) =>
+            fetchApi<{ success: boolean; message: string }>('/auth/webauthn/register/verify', {
+                method: 'POST',
+                body: JSON.stringify(data),
+            }),
+
+        loginOptions: (username: string) =>
+            fetchApi<any>('/auth/webauthn/login/options', {
+                method: 'POST',
+                body: JSON.stringify({ username }),
+            }),
+
+        loginVerify: (username: string, data: any) =>
+            fetchApi<{ success: boolean; token: string; user: User }>('/auth/webauthn/login/verify', {
+                method: 'POST',
+                body: JSON.stringify({ username, ...data }),
+            }),
+    },
 };
 
 // Password Vault API

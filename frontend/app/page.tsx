@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '@/lib/api';
 
+import { startAuthentication } from '@simplewebauthn/browser';
+
 export default function LoginPage() {
   const router = useRouter();
   const [step, setStep] = useState<'credentials' | 'otp'>('credentials');
@@ -47,6 +49,36 @@ export default function LoginPage() {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasskeyLogin = async () => {
+    if (!username) {
+      setError('Please enter your username first');
+      return;
+    }
+    setError('');
+    setLoading(true);
+
+    try {
+      const options = await authApi.webauthn.loginOptions(username);
+      const authResponse = await startAuthentication(options);
+      const verifyRes = await authApi.webauthn.loginVerify(username, authResponse);
+
+      if (verifyRes.success && verifyRes.token) {
+        localStorage.setItem('token', verifyRes.token);
+        localStorage.setItem('user', JSON.stringify(verifyRes.user));
+
+        switch (verifyRes.user.role) {
+          case 'admin': router.push('/admin/dashboard'); break;
+          case 'faculty': router.push('/faculty/dashboard'); break;
+          default: router.push('/student/vault');
+        }
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Passkey login failed');
     } finally {
       setLoading(false);
     }
@@ -171,6 +203,22 @@ export default function LoginPage() {
                 </div>
 
                 <button
+                  type="button"
+                  onClick={handlePasskeyLogin}
+                  className="btn btn-outline w-full mb-3 group border-green-500/30 text-green-400 hover:bg-green-500/10 hover:border-green-500"
+                  disabled={loading}
+                >
+                  <span className="mr-2 group-hover:scale-110 transition-transform inline-block">👆</span>
+                  Sign in with Passkey
+                </button>
+
+                <div className="relative flex py-2 items-center">
+                  <div className="flex-grow border-t border-gray-800"></div>
+                  <span className="flex-shrink mx-4 text-gray-500 text-xs">OR WITH PASSWORD</span>
+                  <div className="flex-grow border-t border-gray-800"></div>
+                </div>
+
+                <button
                   type="submit"
                   className="btn btn-primary w-full"
                   disabled={loading}
@@ -178,7 +226,7 @@ export default function LoginPage() {
                   {loading ? (
                     <span className="spinner" />
                   ) : (
-                    'Login'
+                    'Login with Password'
                   )}
                 </button>
               </form>

@@ -109,6 +109,12 @@ export default function EditPasswordPage({ params }: { params: Promise<{ id: str
                             Shared Resources
                         </Link>
                     </li>
+                    <li className="sidebar-item">
+                        <Link href="/profile" className="sidebar-link">
+                            <span>👤</span>
+                            Profile
+                        </Link>
+                    </li>
                 </nav>
             </div>
 

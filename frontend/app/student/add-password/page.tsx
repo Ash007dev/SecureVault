@@ -67,6 +67,12 @@ export default function AddPasswordPage() {
                             Shared Resources
                         </Link>
                     </li>
+                    <li className="sidebar-item">
+                        <Link href="/profile" className="sidebar-link">
+                            <span>👤</span>
+                            Profile
+                        </Link>
+                    </li>
                 </nav>
             </div>
 
@@ -126,8 +132,8 @@ export default function AddPasswordPage() {
                                         type="button"
                                         onClick={() => setUseOwn(true)}
                                         className={`flex-1 p-3 rounded-lg border-2 transition-all text-sm ${useOwn
-                                                ? 'border-blue-500 bg-blue-500/10 text-blue-400'
-                                                : 'border-gray-700 text-gray-500 hover:border-gray-600'
+                                            ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                                            : 'border-gray-700 text-gray-500 hover:border-gray-600'
                                             }`}
                                     >
                                         🔑 I have a password
@@ -139,8 +145,8 @@ export default function AddPasswordPage() {
                                             handleGenerate();
                                         }}
                                         className={`flex-1 p-3 rounded-lg border-2 transition-all text-sm ${!useOwn
-                                                ? 'border-green-500 bg-green-500/10 text-green-400'
-                                                : 'border-gray-700 text-gray-500 hover:border-gray-600'
+                                            ? 'border-green-500 bg-green-500/10 text-green-400'
+                                            : 'border-gray-700 text-gray-500 hover:border-gray-600'
                                             }`}
                                     >
                                         {generating ? (

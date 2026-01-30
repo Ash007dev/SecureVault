@@ -188,6 +188,12 @@ export default function StudentResourcesPage() {
                             Shared Resources
                         </Link>
                     </li>
+                    <li className="sidebar-item">
+                        <Link href="/profile" className="sidebar-link">
+                            <span>👤</span>
+                            Profile
+                        </Link>
+                    </li>
                 </nav>
 
                 <div className="sidebar-footer">

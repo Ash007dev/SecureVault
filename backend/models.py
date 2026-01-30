@@ -112,12 +112,73 @@ def init_db():
         )
     ''')
     
+    # WebAuthn Credentials (Passkeys)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS webauthn_credentials (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            credential_id TEXT NOT NULL,
+            public_key TEXT NOT NULL,
+            sign_count INTEGER DEFAULT 0,
+            transports TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+    ''')
+    
     conn.commit()
     conn.close()
     print("✓ Database initialized successfully")
     
     # Create demo accounts if they don't exist
     create_demo_accounts()
+
+
+# =============================================================================
+# WEBAUTHN OPERATIONS
+# =============================================================================
+
+def create_webauthn_credential(user_id, credential_id, public_key, sign_count, transports):
+    """Save a new WebAuthn credential."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO webauthn_credentials 
+        (user_id, credential_id, public_key, sign_count, transports)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (user_id, credential_id, public_key, sign_count, str(transports)))
+    conn.commit()
+    conn.close()
+    return True
+
+def get_webauthn_credentials(user_id):
+    """Get all credentials for a user."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM webauthn_credentials WHERE user_id = ?', (user_id,))
+    creds = cursor.fetchall()
+    conn.close()
+    return [dict(c) for c in creds]
+
+def get_credential_by_id(credential_id):
+    """Get a credential by its unique ID."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM webauthn_credentials WHERE credential_id = ?', (credential_id,))
+    cred = cursor.fetchone()
+    conn.close()
+    return dict(cred) if cred else None
+
+def update_credential_counter(credential_id, sign_count):
+    """Update signature counter to prevent replay attacks."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        'UPDATE webauthn_credentials SET sign_count = ? WHERE credential_id = ?',
+        (sign_count, credential_id)
+    )
+    conn.commit()
+    conn.close()
 
 
 def create_demo_accounts():
