@@ -10,7 +10,7 @@ A comprehensive demonstration of cybersecurity concepts including encryption, di
 *Enforces strong password policy (uppercase, lowercase, special chars) with role selection (Student/Faculty)*
 
 ### 2. Multi-Factor Authentication
-*OTP is sent to the secure server console (simulating SMS/Email)*
+*6-digit OTP sent via Email (SMTP) for secure verification*
 
 ### 3. Password Recovery Flow
 *Secure identity verification before password reset*
@@ -105,9 +105,13 @@ SecureVault/
    ```bash
    pip install -r requirements.txt
    ```
-4. **Configure Environment (Optional):**
-   - The app runs fine with defaults!
-   - For email OTPs, create a `.env` file (see `.env.example` if available) with `MAIL_USERNAME` and `MAIL_PASSWORD`.
+4. **Configure Environment (Required for Email OTPs):**
+   Create a `.env` file in the `backend/` directory:
+   ```env
+   MAIL_USERNAME=your-email@gmail.com
+   MAIL_PASSWORD=your-google-app-password
+   ```
+   > **Note:** Use a [Google App Password](https://support.google.com/accounts/answer/185833) for Gmail.
    
 5. **Run Server:**
    ```bash
@@ -239,7 +243,8 @@ Base64( IV[16 bytes] + Signature[256 bytes] + Ciphertext )
 ## Important Notes
 
 - **RSA keys** are saved to `/backend/keys/` and persist across restarts
-- **OTPs** are displayed in server console (demo mode - simulating SMS/Email)
+- **OTPs** are sent via Email (SMTP) to the user's registered email address
+- **Passkeys** use platform authenticators (Windows Hello, Touch ID, Face ID)
 - **Faculty uploads** plain files → system automatically encrypts & signs them
 - **Students** can only decrypt and read resources, not modify or delete them
 - All passwords in vault are encrypted with AES-256 before storage
@@ -328,11 +333,12 @@ Base64( IV[16 bytes] + Signature[256 bytes] + Ciphertext )
 ## NIST SP 800-63-2 Compliance
 
 The registration and login processes follow the NIST E-Authentication Architecture Model:
-- **Strong password policy** enforcement
-- **Multi-factor authentication** (password + OTP)
-- **Biometric Authentication** (FIDO2/WebAuthn)
-- **Rate limiting** on failed login attempts
-- **Secure session management** with JWT tokens
+- **Strong password policy** enforcement (8+ chars, uppercase, lowercase, special chars)
+- **Multi-factor authentication** (Password + Email OTP)
+- **Passwordless Authentication** (FIDO2/WebAuthn Passkeys)
+- **Rate limiting** (5 failed attempts → 15-minute lockout)
+- **Secure session management** with JWT tokens (24h expiry)
+- **Email verification** for OTP delivery via Gmail SMTP
 
 ---
 
